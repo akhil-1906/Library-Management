@@ -1,7 +1,12 @@
 package com.library.user.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
+import com.library.user.dto.StudentListResponseDTO;
+import com.library.user.dto.StudentResponseDTO;
 import com.library.user.dto.UserDTO;
 import com.library.user.entity.UserEntity;
 import com.library.user.exceptions.UserAlreadyExistException;
@@ -19,6 +24,7 @@ public class UserService {
 
 	@Transactional
 	public String create(UserDTO userDTO) {
+
 		UserEntity userEntity = UserEntity.builder().rollNo(userDTO.getRollNo())
 				.registrationNumber(userDTO.getRegistrationNumber()).firstName(userDTO.getFirstName())
 				.lastName(userDTO.getLastName()).mobileNo(userDTO.getMobileNo()).userType(userDTO.getUserType())
@@ -26,7 +32,7 @@ public class UserService {
 		if (userRepo.existsByRollNo(userDTO.getRollNo())) {
 			throw new UserAlreadyExistException("User Already Exist with this Roll number");
 		}
-		
+
 		try {
 
 			userRepo.save(userEntity);
@@ -35,7 +41,33 @@ public class UserService {
 			e.printStackTrace();
 			throw new UserException("User Creation Failed");
 		}
-		return "User Created";
+		return "User Created Successfully";
+	}
+
+	@Transactional
+	public StudentListResponseDTO fetchAllStudent() {
+
+		StudentListResponseDTO response = new StudentListResponseDTO();
+		List<UserEntity> listResponse = userRepo.findAll();
+		List<StudentResponseDTO> studentList = listResponse.stream().map(this::mapResponse)
+				.collect(Collectors.toList());
+		response.setStudentList(studentList);
+		return response;
+	}
+
+	public StudentResponseDTO mapResponse(UserEntity response) {
+
+		return StudentResponseDTO.builder().rollNo(response.getRollNo())
+				.registrationNumber(response.getRegistrationNumber()).firstName(response.getFirstName())
+				.lastName(response.getLastName()).mobileNo(response.getMobileNo()).userType(response.getUserType())
+				.emailId(response.getEmailId()).adharCard(response.getAdharCard()).build();
+
+	}
+
+	public StudentResponseDTO fetchByRollNo(String rollNo) {
+		
+		UserEntity userEntity = userRepo.findByRollNo(rollNo);
+		return mapResponse(userEntity);
 	}
 
 }

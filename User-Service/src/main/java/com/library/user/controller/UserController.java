@@ -2,15 +2,18 @@ package com.library.user.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.library.user.dto.StudentListResponseDTO;
+import com.library.user.dto.StudentResponseDTO;
 import com.library.user.dto.UserDTO;
 import com.library.user.service.UserService;
-
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -24,5 +27,17 @@ public class UserController {
 	@PostMapping("/create")
 	public ResponseEntity<String> createUser(@RequestBody UserDTO UserDTO){
 		return new ResponseEntity<>(user.create(UserDTO),HttpStatus.CREATED);
+	}
+	
+	@GetMapping(value = "/listStudent")
+	public ResponseEntity<StudentListResponseDTO> fetchAllStudents(){
+		
+		return new ResponseEntity<>(user.fetchAllStudent(),HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/fetch/{rollNo}")
+	public ResponseEntity<StudentResponseDTO> fetchByRollNo(@PathVariable String rollNo){
+		
+		return new ResponseEntity<>(user.fetchByRollNo(rollNo),HttpStatus.OK);
 	}
 }

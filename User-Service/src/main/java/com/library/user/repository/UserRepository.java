@@ -9,5 +9,5 @@ import com.library.user.entity.UserEntity;
 public interface UserRepository extends JpaRepository<UserEntity, String>{
 	
 	boolean existsByRollNo(String rollNo);
-	
+	UserEntity findByRollNo(String rollNo);
 }
